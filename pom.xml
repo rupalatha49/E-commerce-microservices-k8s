@@ -18,8 +18,7 @@
     <module>shipping-service</module>
     <module>notification-service</module>
     <module>order-service</module>
-    <module>payment-service</module>
-    <module>product-service</module> 
+    <module>payment-service</module> 
     <module>inventory-service</module>
     <module>favourite-service</module>
     <module>search-service</module>
