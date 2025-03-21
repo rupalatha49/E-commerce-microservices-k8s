@@ -1,0 +1,26 @@
+setup:
+    profiles:
+      - setup
+    build:
+      context: ./docker/setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    container_name: setup
+    init: true
+    volumes:
+      - ./docker/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./docker/setup/lib.sh:/lib.sh:ro,Z
+      - ./docker/setup/roles:/roles:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    depends_on:
+      - elasticsearch
+    networks:
+      - ecommerce-network

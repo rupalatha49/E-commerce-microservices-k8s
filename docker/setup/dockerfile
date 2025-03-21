@@ -1,0 +1,25 @@
+# Set build argument for Elasticsearch version
+ARG ELASTIC_VERSION=8.5.0
+
+# Use a lightweight base image (Debian)
+FROM debian:latest
+
+# Set environment variables
+ENV ELASTIC_VERSION=${ELASTIC_VERSION}
+
+# Install required dependencies
+RUN apt-get update && apt-get install -y curl bash jq && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /setup
+
+# Copy necessary files
+COPY entrypoint.sh /entrypoint.sh
+COPY lib.sh /lib.sh
+COPY roles/ /roles/
+
+# Set permissions for scripts
+RUN chmod +x /entrypoint.sh /lib.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]

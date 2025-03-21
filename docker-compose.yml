@@ -104,7 +104,7 @@ services:
     build:
       context: ./docker/setup/
       args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
+        ELASTIC_VERSION: "8.5.0"
     container_name: setup
     init: true
     volumes:
@@ -130,7 +130,7 @@ services:
     build:
       context: ./docker/elasticsearch/
       args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
+        ELASTIC_VERSION: "8.5.0"
     container_name: elasticsearch
     volumes:
       - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
@@ -152,7 +152,7 @@ services:
     build:
       context: ./docker/logstash/
       args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
+        ELASTIC_VERSION: "8.5.0"
     container_name: logstash
     volumes:
       - ./docker/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
@@ -176,7 +176,7 @@ services:
     build:
       context: ./docker/kibana/
       args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
+        ELASTIC_VERSION: "8.5.0"
     container_name: kibana
     volumes:
       - ./docker/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
