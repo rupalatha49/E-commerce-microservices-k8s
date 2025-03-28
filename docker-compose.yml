@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  #mysql
+  # MySQL Service
   mysql:
     image: mysql
     environment:
@@ -14,7 +14,7 @@ services:
     networks:
       - ecommerce-network
 
-  #mongodb
+  # MongoDB Service
   mongodb:
     image: mongo
     volumes:
@@ -24,7 +24,7 @@ services:
     networks:
       - ecommerce-network
 
-  #zookeeper
+  # Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.3
     hostname: zookeeper
@@ -37,7 +37,7 @@ services:
     networks:
       - ecommerce-network
 
-  #broker
+  # Kafka Broker
   broker:
     image: confluentinc/cp-server:7.4.3
     hostname: broker
@@ -52,24 +52,17 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      CONFLUENT_METRICS_ENABLE: 'true'
-      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
     networks:
       - ecommerce-network
 
-  #control-center
+  # Control Center
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.4.3
     hostname: control-center
@@ -80,52 +73,10 @@ services:
       - "9021:9021"
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:29092'
-      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: 'connect:8083'
-      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL: "http://localhost:8088"
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      CONTROL_CENTER_REPLICATION_FACTOR: 1
-      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
-      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
-      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
-      PORT: 9021
     networks:
       - ecommerce-network
 
-  ###########################
-  #setup
-  #elasticsearch
-  #logstash
-  #kibana
-  ###########################
-  setup:
-    profiles:
-      - setup
-    build:
-      context: ./docker/setup/
-      args:
-        ELASTIC_VERSION: "8.5.0"
-    container_name: setup
-    init: true
-    volumes:
-      - ./docker/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-      - ./docker/setup/lib.sh:/lib.sh:ro,Z
-      - ./docker/setup/roles:/roles:ro,Z
-    environment:
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-    depends_on:
-      - elasticsearch
-    networks:
-      - ecommerce-network
-
-  #elasticsearch
+  # Elasticsearch
   elasticsearch:
     build:
       context: ./docker/elasticsearch/
@@ -141,13 +92,12 @@ services:
     environment:
       node.name: elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx512m
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
     restart: unless-stopped
     networks:
       - ecommerce-network
 
-  #logstash
+  # Logstash
   logstash:
     build:
       context: ./docker/logstash/
@@ -164,14 +114,13 @@ services:
       - "9600:9600"
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
-      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     depends_on:
       - elasticsearch
     restart: unless-stopped
     networks:
       - ecommerce-network
 
-  #kibana
+  # Kibana
   kibana:
     build:
       context: ./docker/kibana/
@@ -190,16 +139,15 @@ services:
     networks:
       - ecommerce-network
 
-# networks:
+  
+
+# Networks
 networks:
   ecommerce-network:
     driver: bridge
     name: ecommerce-network
     external: true
-#  proxy:
-#    external: true
-#  keycloak:
 
-# volumes:
+# Volumes
 volumes:
   elasticsearch:

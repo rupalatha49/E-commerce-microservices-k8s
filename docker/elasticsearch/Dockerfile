@@ -21,4 +21,4 @@ USER elasticsearch
 EXPOSE 9200 9300
 
 # Start Elasticsearch
-CMD ["elasticsearch"]
+CMD ["bin/elasticsearch"]

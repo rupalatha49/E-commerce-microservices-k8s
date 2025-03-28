@@ -1,5 +1,5 @@
 # Set build argument for Elasticsearch version
-ARG ELASTIC_VERSION=8.5.0
+ARG ELASTIC_VERSION=8.6.2
 
 # Use a lightweight base image (Debian)
 FROM debian:latest
